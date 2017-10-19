@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class PSI_RigidBody : MonoBehaviour {
 
+    public float pMass { get { return Mass; } }
+
+    public Vector3 Velocity = Vector3.zero;
+
     [SerializeField]
     [Range(1.0f, 20.0f)]
     private float Mass = 1.0f;
 
     [SerializeField]
-    private bool IsStatic = false;
-
-    [SerializeField]
     private bool UseGravity = true;
 
-    private Vector3 mVelocity = Vector3.zero;
     private Vector3 mForceThisFrame = Vector3.zero;
 
 
@@ -23,12 +23,12 @@ public class PSI_RigidBody : MonoBehaviour {
     private void LateUpdate()
     {
         var acceleration = this.mForceThisFrame / this.Mass;
-        this.mVelocity += acceleration * Time.deltaTime;
+        this.Velocity += acceleration * Time.deltaTime;
         this.mForceThisFrame = Vector3.zero;
 
-        if (this.UseGravity) this.mVelocity.y += Physics.gravity.y * Time.deltaTime;
+        if (this.UseGravity) this.Velocity.y += Physics.gravity.y * Time.deltaTime;
 
-        if(!IsStatic) this.transform.Translate(this.mVelocity * Time.deltaTime);
+        this.transform.Translate(this.Velocity * Time.deltaTime);
     }
 
 

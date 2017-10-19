@@ -9,9 +9,9 @@ public enum ColliderType
 
 public abstract class PSI_Collider : MonoBehaviour
 {
-    public ColliderType ColliderType { get { return mType; } }
-    public Vector3 Position { get { return this.transform.position + LocalPosition; } }
-    public PSI_RigidBody RigidBody { get { return GetComponent<PSI_RigidBody>(); } }
+    public ColliderType pColliderType { get { return mType; } }
+    public Vector3 pPosition { get { return this.transform.position + LocalPosition; } }
+    public PSI_RigidBody pRigidBody { get { return GetComponent<PSI_RigidBody>(); } }
 
     public Vector3 LocalPosition;
 
@@ -27,11 +27,15 @@ public abstract class PSI_Collider : MonoBehaviour
 
     private void OnDisable()
     {
-        FindObjectOfType<PSI_CollisionManager>().RemoveCollider(this);
+        var collisionManager = FindObjectOfType<PSI_CollisionManager>();
+        if(collisionManager != null)
+            FindObjectOfType<PSI_CollisionManager>().RemoveCollider(this);
     }
+
+    protected abstract void OnDrawGizmos();
 
 
     //-------------------------------------Public Functions-------------------------------------
 
-    public abstract void OnCollision(PSI_Collider collider);
+    public abstract void HandleCollision(PSI_Collider collider);
 }
