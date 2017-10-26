@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum ColliderType
 {
-    Sphere
+    Sphere, AABB
 };
 
 public abstract class PSI_Collider : MonoBehaviour

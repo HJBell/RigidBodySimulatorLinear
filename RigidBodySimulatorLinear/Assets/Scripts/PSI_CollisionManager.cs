@@ -45,11 +45,23 @@ public class PSI_CollisionManager : MonoBehaviour {
     {
         if (col1.pColliderType == ColliderType.Sphere && col2.pColliderType == ColliderType.Sphere)
             return SphereSphereCollision((PSI_SphereCollider)col1, (PSI_SphereCollider)col2);
+        if (col1.pColliderType == ColliderType.AABB && col2.pColliderType == ColliderType.AABB)
+            return AABBAABBCollision((PSI_AABBCollider)col1, (PSI_AABBCollider)col2);
         return false;
     }
 
     private bool SphereSphereCollision(PSI_SphereCollider col1, PSI_SphereCollider col2)
     {
         return (Vector3.Distance(col1.pPosition, col2.pPosition) <= Mathf.Abs(col1.Radius) + Mathf.Abs(col2.Radius));
+    }
+
+    private bool AABBAABBCollision(PSI_AABBCollider col1, PSI_AABBCollider col2)
+    {
+        return ((col1.pPosition.x < col2.pPosition.x + col2.Size.x) &&
+                 col1.pPosition.x + col1.Size.x > col2.pPosition.x &&
+                 col1.pPosition.y < col2.pPosition.y + col2.Size.y &&
+                 col1.pPosition.y + col1.Size.y > col2.pPosition.y &&
+                 col1.pPosition.z < col2.pPosition.z + col2.Size.z &&
+                 col1.pPosition.z + col1.Size.z > col2.pPosition.z);
     }
 }

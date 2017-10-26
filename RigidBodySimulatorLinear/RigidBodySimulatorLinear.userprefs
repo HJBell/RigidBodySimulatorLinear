@@ -1,0 +1,14 @@
+﻿<Properties StartupItem="RigidBodySimulatorLinear.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\PSI_SphereCollider.cs">
+    <Files>
+      <File FileName="Assets\Scripts\PSI_CollisionManager.cs" Line="37" Column="43" />
+      <File FileName="Assets\Scripts\PSI_SphereCollider.cs" Line="22" Column="2" />
+      <File FileName="Assets\Scripts\PSI_Collider.cs" Line="5" Column="25" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
