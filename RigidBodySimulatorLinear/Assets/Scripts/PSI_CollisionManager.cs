@@ -12,15 +12,8 @@ public class PSI_CollisionManager : MonoBehaviour {
     private void FixedUpdate()
     {
         for(int i = 0; i < mColliders.Count; i++)
-        {
             for(int j = i+1; j < mColliders.Count; j++)
-            {
-                if(CheckCollision(mColliders[i], mColliders[j]))
-                {
-                    mColliders[i].HandleCollision(mColliders[j]);
-                }
-            }
-        }
+                CheckForCollision(mColliders[i], mColliders[j]);
     }
 
 
@@ -41,27 +34,18 @@ public class PSI_CollisionManager : MonoBehaviour {
 
     //------------------------------------Private Functions-------------------------------------
 
-    private bool CheckCollision(PSI_Collider col1, PSI_Collider col2)
+    private void CheckForCollision(PSI_Collider col1, PSI_Collider col2)
     {
+        // Sphere on sphere.
         if (col1.pColliderType == ColliderType.Sphere && col2.pColliderType == ColliderType.Sphere)
-            return SphereSphereCollision((PSI_SphereCollider)col1, (PSI_SphereCollider)col2);
+            if (PSI_Physics.SphereSphereCollisionOccured((PSI_SphereCollider)col1, (PSI_SphereCollider)col2))
+                PSI_Physics.HandleSphereSphereCollision((PSI_SphereCollider)col1, (PSI_SphereCollider)col2);
+            
+        // AABB on AABB.
         if (col1.pColliderType == ColliderType.AABB && col2.pColliderType == ColliderType.AABB)
-            return AABBAABBCollision((PSI_AABBCollider)col1, (PSI_AABBCollider)col2);
-        return false;
+            if(PSI_Physics.AABBAABBCollisionOccured((PSI_AABBCollider)col1, (PSI_AABBCollider)col2))
+                PSI_Physics.HandleAABBAABBCollision((PSI_AABBCollider)col1, (PSI_AABBCollider)col2);
     }
 
-    private bool SphereSphereCollision(PSI_SphereCollider col1, PSI_SphereCollider col2)
-    {
-        return (Vector3.Distance(col1.pPosition, col2.pPosition) <= Mathf.Abs(col1.Radius) + Mathf.Abs(col2.Radius));
-    }
-
-    private bool AABBAABBCollision(PSI_AABBCollider col1, PSI_AABBCollider col2)
-    {
-        return ((col1.pPosition.x < col2.pPosition.x + col2.Size.x) &&
-                 col1.pPosition.x + col1.Size.x > col2.pPosition.x &&
-                 col1.pPosition.y < col2.pPosition.y + col2.Size.y &&
-                 col1.pPosition.y + col1.Size.y > col2.pPosition.y &&
-                 col1.pPosition.z < col2.pPosition.z + col2.Size.z &&
-                 col1.pPosition.z + col1.Size.z > col2.pPosition.z);
-    }
+    
 }

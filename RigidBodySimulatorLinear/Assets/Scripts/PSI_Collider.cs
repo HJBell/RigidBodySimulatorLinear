@@ -33,9 +33,4 @@ public abstract class PSI_Collider : MonoBehaviour
     }
 
     protected abstract void OnDrawGizmos();
-
-
-    //-------------------------------------Public Functions-------------------------------------
-
-    public abstract void HandleCollision(PSI_Collider collider);
 }

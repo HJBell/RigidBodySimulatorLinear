@@ -14,9 +14,9 @@ public class PSI_RigidBody : MonoBehaviour {
     private float Mass = 1.0f;
 
     [SerializeField]
-    [Range(0.0f, 10.0f)]
+    [Range(0.0f, 1.0f)]
     [Tooltip("The coefficient of restitution for the body")]
-    private float CoeffOfRest = 1.0f;
+    private float CoeffOfRest = 0.5f;
 
     [SerializeField]
     private bool UseGravity = true;

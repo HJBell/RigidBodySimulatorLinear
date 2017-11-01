@@ -83,6 +83,7 @@
     <Compile Include="Assets\Scripts\PSI_AABBCollider.cs" />
     <Compile Include="Assets\Scripts\PSI_Collider.cs" />
     <Compile Include="Assets\Scripts\PSI_CollisionManager.cs" />
+    <Compile Include="Assets\Scripts\PSI_Physics.cs" />
     <Compile Include="Assets\Scripts\PSI_RigidBody.cs" />
     <Compile Include="Assets\Scripts\PSI_SphereCollider.cs" />
   </ItemGroup>
