@@ -54,6 +54,16 @@ public static class PSI_Physics {
                  col1.pPosition.z + col1.Size.z > col2.pPosition.z);
     }
 
+    public static bool SpherePlaneCollisionOccured(PSI_AABBCollider col1, PSI_AABBCollider col2)
+    {
+        return ((col1.pPosition.x < col2.pPosition.x + col2.Size.x) &&
+                 col1.pPosition.x + col1.Size.x > col2.pPosition.x &&
+                 col1.pPosition.y < col2.pPosition.y + col2.Size.y &&
+                 col1.pPosition.y + col1.Size.y > col2.pPosition.y &&
+                 col1.pPosition.z < col2.pPosition.z + col2.Size.z &&
+                 col1.pPosition.z + col1.Size.z > col2.pPosition.z);
+    }
+
 
     //-----------------------------------Handling Collisions------------------------------------
 

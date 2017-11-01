@@ -46,6 +46,4 @@ public class PSI_CollisionManager : MonoBehaviour {
             if(PSI_Physics.AABBAABBCollisionOccured((PSI_AABBCollider)col1, (PSI_AABBCollider)col2))
                 PSI_Physics.HandleAABBAABBCollision((PSI_AABBCollider)col1, (PSI_AABBCollider)col2);
     }
-
-    
 }
