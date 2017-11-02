@@ -45,5 +45,15 @@ public class PSI_CollisionManager : MonoBehaviour {
         if (col1.pColliderType == ColliderType.AABB && col2.pColliderType == ColliderType.AABB)
             if(PSI_Physics.AABBAABBCollisionOccured((PSI_AABBCollider)col1, (PSI_AABBCollider)col2))
                 PSI_Physics.HandleAABBAABBCollision((PSI_AABBCollider)col1, (PSI_AABBCollider)col2);
+
+        // Sphere on plane.
+        if ((col1.pColliderType == ColliderType.Sphere && col2.pColliderType == ColliderType.Plane) ||
+            (col1.pColliderType == ColliderType.Plane && col2.pColliderType == ColliderType.Sphere))
+        {
+            PSI_SphereCollider sphere = (PSI_SphereCollider)((col1.pColliderType == ColliderType.Sphere) ? col1 : col2);
+            PSI_PlaneCollider plane = (PSI_PlaneCollider)((col1.pColliderType == ColliderType.Sphere) ? col2 : col1);
+            if (PSI_Physics.SpherePlaneCollisionOccured(sphere, plane))
+                PSI_Physics.HandleSpherePlaneCollision(sphere, plane);
+        }
     }
 }

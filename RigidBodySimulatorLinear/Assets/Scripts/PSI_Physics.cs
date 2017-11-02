@@ -36,6 +36,20 @@ public static class PSI_Physics {
         return impulseResult;
     }
 
+    public static Vector3 CalculateImpulseAgainstStaticObject(PSI_RigidBody rb, Vector3 minTranslation)
+    {
+        var impactVelocity = rb.Velocity;
+        var inverseMass = 1.0f / rb.pMass;
+
+        var vn = Vector3.Dot(impactVelocity, minTranslation.normalized);
+        if (vn > 0.0f) return Vector3.zero;
+        
+        var i = (-(1.0f + rb.pCoeffOfRest) * vn) / inverseMass;
+        var impulse = minTranslation.normalized * i;
+
+        return impulse * inverseMass;
+    }
+
 
     //---------------------------------Checking For Collisions----------------------------------
 
@@ -54,14 +68,38 @@ public static class PSI_Physics {
                  col1.pPosition.z + col1.Size.z > col2.pPosition.z);
     }
 
-    public static bool SpherePlaneCollisionOccured(PSI_AABBCollider col1, PSI_AABBCollider col2)
+    public static bool SpherePlaneCollisionOccured(PSI_SphereCollider sphereCol, PSI_PlaneCollider planeCol)
     {
-        return ((col1.pPosition.x < col2.pPosition.x + col2.Size.x) &&
-                 col1.pPosition.x + col1.Size.x > col2.pPosition.x &&
-                 col1.pPosition.y < col2.pPosition.y + col2.Size.y &&
-                 col1.pPosition.y + col1.Size.y > col2.pPosition.y &&
-                 col1.pPosition.z < col2.pPosition.z + col2.Size.z &&
-                 col1.pPosition.z + col1.Size.z > col2.pPosition.z);
+        float distToProjectedPoint = Vector3.Dot(planeCol.pNormal, (sphereCol.pPosition - planeCol.pPosition));
+        Vector3 projectedPoint = sphereCol.pPosition - distToProjectedPoint * planeCol.pNormal;
+
+        // Generate 4 triangles between the corners of the plane and the projected point.
+        var planeVerts = planeCol.GetPlaneVertices();
+        var triangles = new Vector3[4, 3];
+        for (int i = 0; i < 4; i++)
+        {
+            triangles[i, 0] = projectedPoint;
+            triangles[i, 1] = planeVerts[i];
+            triangles[i, 2] = planeVerts[(i==3)?0:i+1];
+        }
+
+        // Sum the area of the traingles.
+        float totalTriArea = 0.0f;
+        for(int i = 0; i < 4; i++)
+        {
+            float a = Vector3.Distance(triangles[i, 0], triangles[i, 1]);
+            float b = Vector3.Distance(triangles[i, 1], triangles[i, 2]);
+            float c = Vector3.Distance(triangles[i, 2], triangles[i, 0]);
+            float s = (a + b + c) / 2;
+            totalTriArea += Mathf.Sqrt(s * (s - a) * (s - b) * (s - c));
+        }
+
+        // Check if the sum area is equal to the area of the plane. 
+        // If so then the projected point is within the bounds of the plane.
+        if (Mathf.Abs(totalTriArea - planeCol.pArea) > 0.05f) return false;
+
+        // Check if the sphere is intersecting with the plane.
+        return (Mathf.Abs(distToProjectedPoint) <= sphereCol.Radius);
     }
 
 
@@ -98,9 +136,9 @@ public static class PSI_Physics {
         List<float> colVectorAxes = new List<float>() { Mathf.Abs(colVector.x), Mathf.Abs(colVector.y), Mathf.Abs(colVector.z) };
         colVectorAxes.Sort();
         string axisName = "";
-        if (Mathf.Abs(colVector.x) == colVectorAxes[2]) axisName = "x"; ;
-        if (Mathf.Abs(colVector.y) == colVectorAxes[2]) axisName = "y"; ;
-        if (Mathf.Abs(colVector.z) == colVectorAxes[2]) axisName = "z"; ;
+        if (Mathf.Abs(colVector.x) == colVectorAxes[2]) axisName = "x";
+        if (Mathf.Abs(colVector.y) == colVectorAxes[2]) axisName = "y";
+        if (Mathf.Abs(colVector.z) == colVectorAxes[2]) axisName = "z";
 
         // Generating an axis aligned collision vector.
         object tempVector = Vector3.zero;
@@ -126,5 +164,26 @@ public static class PSI_Physics {
         var impulse = PSI_Physics.CalculateImpulse(col1.pRigidBody, col2.pRigidBody, minTranslationVector);
         col1.pRigidBody.Velocity += impulse.Impulse1;
         col2.pRigidBody.Velocity += impulse.Impulse2;
+    }
+
+    public static void HandleSpherePlaneCollision(PSI_SphereCollider sphereCol, PSI_PlaneCollider planeCol)
+    {
+        float distToProjectedPoint = Vector3.Dot(planeCol.pNormal, (sphereCol.pPosition - planeCol.pPosition));
+        Vector3 projectedPoint = sphereCol.pPosition - distToProjectedPoint * planeCol.pNormal;
+
+        // Calculating the collision vector.
+        var colVector = sphereCol.pPosition - projectedPoint;
+
+        // Calculating the minimum translation vector needed to reset the sphere.
+        var minTranslationVector = colVector * ((sphereCol.Radius - colVector.magnitude) / colVector.magnitude);
+
+        // Calculating the inverse mass once for efficiency.
+        //var sphereInverseMass = 1.0f / sphereCol.pRigidBody.pMass;
+
+        // Moving the sphere collider so it is not overlapping.
+        sphereCol.transform.Translate(minTranslationVector);
+
+        // Applying the impulse to the bodies.
+        sphereCol.pRigidBody.Velocity += PSI_Physics.CalculateImpulseAgainstStaticObject(sphereCol.pRigidBody, minTranslationVector);
     }
 }
